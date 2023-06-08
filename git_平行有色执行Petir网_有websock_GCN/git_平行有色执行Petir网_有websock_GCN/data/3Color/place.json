@@ -1,0 +1,35 @@
+{
+	"t_colors":["y","r","b"],
+	"p_colors":["y","r","b"],
+	"places":
+	{
+		"p0":{"colors":["y","r"],"delay":{"y":1,"r":2},"token":{"y":1,"r":1},"preVertx":{},"postVertx":{"t0":{"y":"y","r":"r"}}},
+		"p1":{"colors":["y","r"],"delay":{"y":1,"r":2},"token":{},"preVertx":{"t0":{"y":"y","r":"r"}},"postVertx":{"t1":{"y":"y","r":"r"}}},
+		"p2":{"colors":["y","r"],"delay":{"y":1,"r":2},"token":{},"preVertx":{"t1":{"y":"y","r":"r"}},"postVertx":{}},
+		"p3":{"colors":["b"],"delay":{"b":1},"token":{"b":1},"preVertx":{"t5":{"b":"b"}},"postVertx":{"t2":{"b":"b"},"t0":{"b":["y","r"]}}},
+		"p4":{"colors":["b"],"delay":{"b":1},"token":{},"preVertx":{"t3":{"b":"b"},"t1":{"b":["y","r"]}},"postVertx":{"t4":{"b":"b"}}},
+		"p5":{"colors":["b"],"delay":{"b":1},"token":{},"preVertx":{"t2":{"b":"b"}},"postVertx":{"t3":{"b":"b"}}},
+		"p6":{"colors":["b"],"delay":{"b":1},"token":{},"preVertx":{"t4":{"b":"b"}},"postVertx":{"t5":{"b":"b"}}}
+	},
+	"transitions":
+	{
+		"t0":{"colors":["y","r"],"preVertx":{"p0":{"y":"y","r":"r"},"p3":{"y":"b","r":"b"}},"postVertx":{"p1":{"y":"y","r":"r"}}},
+		"t1":{"colors":["y","r"],"preVertx":{"p1":{"y":"y","r":"r"}},"postVertx":{"p2":{"y":"y","r":"r"},"p4":{"y":"b","r":"b"}}},
+		"t2":{"colors":["b"],"preVertx":{"p3":{"b":"b"}},"postVertx":{"p5":{"b":"b"}}},
+		"t3":{"colors":["b"],"preVertx":{"p5":{"b":"b"}},"postVertx":{"p4":{"b":"b"}}},
+		"t4":{"colors":["b"],"preVertx":{"p4":{"b":"b"}},"postVertx":{"p6":{"b":"b"}}},
+		"t5":{"colors":["b"],"preVertx":{"p6":{"b":"b"}},"postVertx":{"p3":{"b":"b"}}}
+	},
+	"goal_m":
+	{
+
+		"p2":{"token":{"y":1,"r":1}},
+		"p3":{"token":{"b":1}}
+
+		
+	}
+
+}
+
+
+ 

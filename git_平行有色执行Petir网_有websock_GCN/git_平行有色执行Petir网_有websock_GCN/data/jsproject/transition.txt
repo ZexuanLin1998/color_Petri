@@ -1,0 +1,4 @@
+{transition:
+	{"id":{"t0"},"preVertx":{("p0":{"id",1})},"postVertx":{("p1":{"id":1})}}
+	{"id":{"t1"},"preVertx":{("p1":{"id",1})},"postVertx":{("p2":{"id":1})}}
+}
