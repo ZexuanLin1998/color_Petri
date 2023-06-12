@@ -165,13 +165,18 @@ int main() {
 	//´ò¿ªwebsocket¶Ë¿Ú
 	mws->ws->onopen = [&](const WebSocketChannelPtr&channel, const HttpRequestPtr&req)
 	{
-		for (auto place : mws->petri->PlacePointer)
+		for (auto place : mws->petri->place_temp)
 		{
 			for (auto color : place.second->colors)
 			{
-				if (mws->petri->PlacePointer[place.second->id]->token[color] != 0 && mws->petri->PlacePointer[place.second->id]->delay != 0)
-					mws->petri->PlacePointer[place.second->id]->timer->start();
-				mws->petri->PlacePointer[place.second->id]->low_exc(*(mws->petri), color);
+				string place_id;
+				string place_num;
+				string place_color;
+				analysis(place.second->id, " ", place_id, place_color, "p", place_num);
+				if (mws->petri->place_temp[atoi(place_num.c_str()) - 1].second->token[color] != 0 
+					&& mws->petri->place_temp[atoi(place_num.c_str()) - 1].second->delay != 0)
+					mws->petri->place_temp[atoi(place_num.c_str()) - 1].second->timer->start();
+				mws->petri->place_temp[atoi(place_num.c_str()) - 1].second->low_exc(*(mws->petri), color);
 			}
 		}
 		mws->petri->init();
