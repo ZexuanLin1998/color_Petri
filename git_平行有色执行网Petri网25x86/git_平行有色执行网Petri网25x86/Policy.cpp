@@ -47,32 +47,36 @@ targetDevice(torch::kCPU) {
 	base_features.index_put_({ 0, "...", TARGET_MARKING8 }, torch::from_blob(m_target[7], num_places, torch::kFloat));
 	base_features.index_put_({ 0, "...", TARGET_MARKING9 }, torch::from_blob(m_target[8], num_places, torch::kFloat));
 	base_features.index_put_({ 0, "...", TARGET_MARKING10 }, torch::from_blob(m_target[9], num_places , torch::kFloat));
+	//std::cout << base_features << std::endl;
 
 }
 
-torch::Tensor Policy::forward(const torch::Tensor& features) {
+torch::Tensor Policy::forward(const torch::Tensor& features, const torch::Tensor& C_stack, const torch::Tensor& C_t_stack) {
 	if (targetDevice == torch::kCPU)
 	{
 		//std::cout << features << std::endl;
 		std::vector<torch::jit::IValue> inputs;
 		// 定义 C_t_stack 张量
-		torch::Tensor C_t_stack = torch::ones({ 1, 81,81 });
+		//torch::Tensor C_t_stack = torch::ones({ 1, 81,81 });
 		// 定义 C_stack 张量
-		torch::Tensor C_stack = torch::ones({ 1,81,81 });
+		//torch::Tensor C_stack = torch::ones({ 1,81,81 });
 		inputs.push_back(features);
 		inputs.push_back(C_t_stack);
 		inputs.push_back(C_stack);
+		//std::cout << features << std::endl;
+		//std::cout << C_t_stack << std::endl;
+		//std::cout << C_stack << std::endl;
 		/*检测错误*/
-		try {
-			// 运行模型
-			torch::Tensor output = model.forward(inputs).toTensor();;
-			// 输出结果
-			std::cout << "Model output: " << output << std::endl;
-		}
-		catch (const std::exception& e) {
-			// 处理异常
-			std::cerr << "Error: " << e.what() << std::endl;
-		}
+		//try {
+		//	// 运行模型
+		//	torch::Tensor output = model.forward(inputs).toTensor();;
+		//	// 输出结果
+		//	std::cout << "Model output: " << output << std::endl;
+		//}
+		//catch (const std::exception& e) {
+		//	// 处理异常
+		//	std::cerr << "Error: " << e.what() << std::endl;
+		//}
 		
 		return model.forward(inputs).toTensor();
 	}
@@ -99,18 +103,18 @@ int Policy::get_next_optimal_trasition(
 		torch::from_blob(markings, num_nonempty_places, torch::kFloat));
 	base_features.index_put_({ 0, nonempty_places_tensor, 1 },
 		torch::from_blob(waiting_times, num_nonempty_places, torch::kFloat) / max_delay);
-	torch::Tensor q_values;
-	try { q_values = forward(base_features); }
-	catch (c10::Error &msg) {
-		std::cout << msg.msg().c_str() << std::endl;
-	};
-	auto mask = torch::ones_like(q_values, torch::kBool);
-	mask.index_put_({ 0, torch::from_blob(enable_transitions, num_enable_transitions, torch::kLong) }, false);
-	q_values.masked_fill_(mask, -FLT_MAX);
-	int next_optimal_trasition = torch::argmax(q_values, 1).item<int>();
+	//torch::Tensor q_values;
+	//try { q_values = forward(base_features); }
+	//catch (c10::Error &msg) {
+	//	std::cout << msg.msg().c_str() << std::endl;
+	//};
+	//auto mask = torch::ones_like(q_values, torch::kBool);
+	//mask.index_put_({ 0, torch::from_blob(enable_transitions, num_enable_transitions, torch::kLong) }, false);
+	//q_values.masked_fill_(mask, -FLT_MAX);
+	//int next_optimal_trasition = torch::argmax(q_values, 1).item<int>();
 	base_features.index_put_({ 0, nonempty_places_tensor, 0 }, 0);
 	base_features.index_put_({ 0, nonempty_places_tensor, 1 }, 0);
-	return next_optimal_trasition;
+	//return next_optimal_trasition;
 }
 
 std::vector<float> Policy::get_Q(int num_enable_transitions,
@@ -119,7 +123,9 @@ std::vector<float> Policy::get_Q(int num_enable_transitions,
 	long long * nonempty_places,
 	int num_places,
 	float** markings,
-	float* waiting_times) {
+	float* waiting_times,
+	const torch::Tensor& C_stack,
+	const torch::Tensor& C_t_stack) {
 	is_busy = 1;
 	if (num_enable_transitions == 0) { return {}; }
 	torch::Tensor nonempty_places_tensor = torch::from_blob(nonempty_places, num_nonempty_places, torch::kLong);
@@ -137,7 +143,7 @@ std::vector<float> Policy::get_Q(int num_enable_transitions,
 
 	base_features.index_put_({ 0, nonempty_places_tensor, WAITED_TIME },
 		torch::from_blob(waiting_times, num_nonempty_places, torch::kFloat));
-	auto q_values = forward(base_features).to(torch::kCPU);
+	auto q_values = forward(base_features, C_stack, C_t_stack).to(torch::kCPU);
 	is_busy = 0;
 	auto mask = torch::ones_like(q_values, torch::kBool);
 	mask.index_put_({ 0, torch::from_blob(enable_transitions, num_enable_transitions, torch::kLong) }, false);
@@ -155,6 +161,6 @@ std::vector<float> Policy::get_Q(int num_enable_transitions,
 	base_features.index_put_({ 0, "...", MARKING9 }, 0);
 	base_features.index_put_({ 0, "...", MARKING10 }, 0);
 	base_features.index_put_({ 0, "...", WAITED_TIME }, 0);
-	std::cout << base_features << std::endl;
+	//std::cout << base_features << std::endl;
 	return ans;
 }

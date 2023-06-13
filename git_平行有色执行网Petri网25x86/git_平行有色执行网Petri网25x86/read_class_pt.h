@@ -1,9 +1,9 @@
 #pragma once
 constexpr auto class_Place = ".\\data\\3Color\\coloured_pn.json";
-constexpr auto ModelPath = "C:\\Users\\Public\\model\\model25x81.pt";
+constexpr auto ModelPath = "C:\\Users\\Public\\model\\model1.pt";
 constexpr auto Place_info = "C:\\Users\\Public\\model\\place_info.csv";
-constexpr auto C_pre = "C:\\Users\\Public\\model\\C_pre.csv";
-constexpr auto C_post = "C:\\Users\\Public\\model\\C_post.csv";
+constexpr auto C_pre = "C:\\Users\\Public\\model\\C_pre81x96.csv";
+constexpr auto C_post = "C:\\Users\\Public\\model\\C_post81x96.csv";
 constexpr auto C_delay = "C:\\Users\\Public\\model\\C_delay.csv";
 constexpr auto c_stack0 = "C:\\Users\\Public\\model\\c_stack0.csv";
 

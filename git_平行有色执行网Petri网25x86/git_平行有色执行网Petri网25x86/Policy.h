@@ -54,7 +54,7 @@ public:
 	std::atomic<bool> is_busy;
 	Policy(int num_places, int num_transitions, int num_features_per_place, float* delays, float max_delay, const std::string pt_path);
 	Policy(int id, int num_places, int num_transitions, int num_features_per_place, float* delays, float max_delay, float** m_target, float* capacity, float* pre_arcs, float* pos_arcs,const std::string pt_path);
-	torch::Tensor forward(const torch::Tensor& features);
+	torch::Tensor forward(const torch::Tensor& features, const torch::Tensor& C_stack, const torch::Tensor& C_t_stack);
 	int get_next_optimal_trasition(int num_enable_transitions,
 		long long * enable_transitions,
 		int num_nonempty_places,
@@ -67,7 +67,9 @@ public:
 		long long * nonempty_places,
 		int num_places,
 		float** markings,
-		float* waiting_times);
+		float* waiting_times,
+		const torch::Tensor& C_stack,
+		const torch::Tensor& C_t_stack);
 	Policy() : targetDevice(torch::kCPU) {};
 };
 

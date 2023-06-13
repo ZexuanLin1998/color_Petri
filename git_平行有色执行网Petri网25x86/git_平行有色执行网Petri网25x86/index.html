@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta char set="utf-8">
+  <title>myJsonData</title>
+  <style></style>
+  <link rel="stylesheet" type="text/css" href="menu.css" /> 
+</head>
+
+<body onclick="hide_popups()">
+  <input type="text" id="input1" value="" placeholder="弧的起始对象" />
+  </input>
+  <input type="text" id="input2" value="" placeholder="弧的终止对象" />
+  </input>
+  <input type="number" id="input3" placeholder="托肯数量" />
+  </input>
+  <button type="button" id="button">add transitions</button>
+  <button type="button" id="button" onclick="getuserinfo()">link http</button>
+  <button type="button" id="button1" style="margin-right: 1vw;">add places</button>
+
+  <button type="button" id="button2" onclick="play()">start auto plays</button>
+  <button type="button" id="button3" onclick="stop_play()">stop auto plays</button>
+
+  <button type="button" id="button_open" onclick="WebSocketTest()">start project</button>
+  <button type="button" id="button_close" onclick="close_c()" style="margin-right: 1vw;">关闭C++程序</button>
+
+  <button type="button" id="button2" onclick="backToLastStep()">backToLastStep</button>
+  <button type="button" id="button2" onclick="restartlayout()" style="margin-right: 1vw;">backToRoot</button>
+
+  <button type="button" id="button2" onclick="stopsimulation()">stopSimulation</button>
+  <button type="button" id="button2" onclick="restartsimulation()">restartSimulation</button>
+
+  <button type="button" id="download_btn" onclick="down_load_json()">down_load_json</button>
+  <button type="button" id="watch_btn" onclick="look_up_json()">look_up_json</button>
+
+  <div class="flex-column-container">
+    <div>
+      <input type="file" id="transition" onchange="gettrans(this)" multiple />select transition.json文件
+      </input>
+    </div>
+    <div>
+      <input type="file" id="place" onchange="getplace(this)" multiple />select place.json文件
+      </input>
+    </div>
+    <div>
+      <input type="file" id="links" onchange="getlinks(this)" multiple />select links.json文件
+      </input>
+    </div>
+  </div>
+  <div class="flex-row-container" style="height:25px;">
+    <div class="flex-row-wrp button-group">
+      <input type="number" id="input4" placeholder="distance_of_rows(defalt 150)" />
+      <button type="button" id="button4" onclick="Modify_distance_of_rows()">Modify_distance_of_rows</button>
+    </div>
+    <div class="flex-row-wrp button-group">
+      <input type="number" id="input5" placeholder="distance_of_cols(defalt 100)" />
+      <button type="button" id="button5" onclick="Modify_distance_of_cols()">Modify_distance_of_cols</button>
+    </div>
+    <div class="flex-row-wrp button-group">
+      <input type="number" id="input6" placeholder="token_v(defalt 50)" />
+      <button type="button" id="button6" onclick="Modify_token_v()">Modify_token_v</button>
+    </div>
+    <div class="flex-row-wrp button-group">
+      <div class="flex-column-container" style="margin:0">
+	<input type="string" id="input_petriName" onkeyup="pop_netName()" placeholder="name of net" />
+	<ul class="on_changes" style="margin-top: 125px"> </ul>
+      </div>
+      <button type="button" id="btn_getData" onclick="get_data()" style="margin-right: 1vw;">get datas</button>
+    </div>
+    <div class="flex-row-wrp button-group">
+      <input type="string" id="input_petriName_tosave" placeholder="save net" />
+      <button type="button" id="btn_save" onclick="save_data()" style="margin-right: 1vw;">save datas</button>
+      <button type="button" id="btn_getNames" onclick="get_names()" style="margin-right: 1vw;">get all net</button>
+    </div>
+  </div>
+
+  <div class="flex-row-container">
+    <div class="flex-row-wrp">
+      <p>mean of place</p>
+      <p id="meaning_of_place" style="color:green"></p>
+    </div>
+    <div class="flex-row-wrp">
+      <p>current name of pn:</p>
+      <p id="petri_name" style="color:green"></p>
+    </div>
+    <div class="flex-row-wrp">
+      <p>saved time:</p>
+      <p id="petri_time" style="color:green"></p>
+    </div>
+  </div>
+
+  <!--script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"> </script-->
+  <!--script src="https://d3js.org/d3.v5.min.js"></script-->
+  <script src="./jquery.js"> </script>
+  <script src="./d3.min.js"></script>
+  <script src="./tools.js"></script>
+  <script src="./buttonBindFunctions.js"></script>
+  <script src="./websocketRelated.js"></script>
+  <script src="./findHotSpot.js"></script>
+</body>
+
+</html>

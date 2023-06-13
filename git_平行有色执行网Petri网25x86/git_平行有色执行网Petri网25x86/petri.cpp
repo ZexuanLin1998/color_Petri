@@ -78,7 +78,7 @@ string Petri::stratige()
 	return this->optimalPath[step++];
 }
 
-void Petri::updata_waitingtime(string t,string color)
+void Petri::updata_waitingtime(string t)
 {
 	string tran_id;
 	string tran_color;
@@ -140,9 +140,10 @@ void Petri::init()
 	//将目标标识存入
 	for (int row = 0;row < p_colors.size();row++)
 	{
-		auto it_place_id = PlacePointer[row];
+		
 		for (int column = 0;column < num_places;column++)
 		{
+			auto it_place_id = PlacePointer[column];
 			auto goals = m_target[it_place_id.second->id];
 			target[row][column] = goals[p_colors[row]];
 			//cout << target[row][column] << " ";
@@ -204,6 +205,7 @@ void Petri::js_toPetri(Petri& pn) {
 		{
 			rapidjson::Value&place_obj = places_obj[place.name];
 			auto p = new Place();
+			p->id = place.name.GetString();
 			/*寻找json文件中的token*/
 			rapidjson::Value::ConstMemberIterator it_token = place_obj.FindMember("token");
 			if (it_token != place_obj.MemberEnd())
@@ -305,6 +307,7 @@ void Petri::js_toPetri(Petri& pn) {
 		{
 			rapidjson::Value&tran = trans_obj[trans.name];
 			auto t = new Transition();
+			//t->id = trans.name.GetString();
 			rapidjson::Value::ConstMemberIterator it_pre = tran.FindMember("pre_arcs");
 			if (it_pre != tran.MemberEnd())
 			{

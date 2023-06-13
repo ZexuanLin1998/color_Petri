@@ -60,7 +60,7 @@ public:
 	void js_toPetri(Petri&pn);//JSON转化Petri网
 	void play(Petri&pn);//Petri网自动演化
 	string stratige();//执行给定变迁的激发序列
-	void updata_waitingtime(string t,string color);
+	void updata_waitingtime(string t);
 	void init();
 	~Petri()
 	{
