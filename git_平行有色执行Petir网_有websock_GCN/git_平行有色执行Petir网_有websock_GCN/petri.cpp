@@ -1,49 +1,75 @@
 
 #include"petri.h"
 #include<stdlib.h>
-void Petri::play(Petri&pn)
-{	
-	while (1)
+/*将字符串进行分解 例如:P22 agv 分解str2=P22,str3=agv,str5=22*/
+void analysis(string str, string str1, string &str2, string &str3, string str4, string &str5)//解析字符串
+{
+	string t = "t";
+	string p = "p";
+	int posLeft = 0;
+	int posX = str.find(str1);
+	int posRight = -1;
+	str2 = str.substr(posLeft, posX);
+	if (posX != -1)
 	{
-		vector<string>enable_t;
-		for (auto tran : pn.TransitionPointer)
-		{
-			for (auto color : tran.second->colors)
-			{
-				if (tran.second->is_enable(pn, color))
-				{
-					enable_t.push_back(tran.first);
-					tran.second->fire(pn, color);
-					cout << tran.first << color << ":";
-					for (auto place : pn.PlacePointer)
-						cout << place.second->token[color] << " ";
-					cout << endl;
-				}
-			}
-		}
-		int count = 0;
-		for (auto place : pn.PlacePointer)
-		{
-			for (auto color : place.second->colors)
-			{
-				//auto w = pn.goal_m[p.first];
-				if (pn.m_target[place.first].size() ==0)
-					continue;
-				if (place.second->token[color] == pn.m_target[place.first].at(color))
-					count++;
-			}
-			/*此处是设定目标标识结果*/
-			if (count == 3)
-				exit(1);
-		}
-		if (enable_t.size() == 0)
-		{
-			cout << "无使能变迁" << endl;
-			exit(1);
-		}
-		enable_t.clear();
-	}	
+		str3 = str.substr(posX + 1, posRight);
+	}
+
+	if (str4 == "p")
+	{
+		posLeft = str.find(str4);
+		str5 = str.substr(posLeft + 1, posX - 1);
+	}
+	if (str4 == "t")
+	{
+		posLeft = str.find(str4);
+		str5 = str.substr(posLeft + 1, posX - 1);
+	}
+
 }
+//void Petri::play(Petri&pn)
+//{	
+//	while (1)
+//	{
+//		vector<string>enable_t;
+//		for (auto tran : pn.TransitionPointer)
+//		{
+//			for (auto color : tran.second->colors)
+//			{
+//				if (tran.second->is_enable(pn, color))
+//				{
+//					enable_t.push_back(tran.first);
+//					tran.second->fire(pn, color);
+//					cout << tran.first << color << ":";
+//					for (auto place : pn.PlacePointer)
+//						cout << place.second->token[color] << " ";
+//					cout << endl;
+//				}
+//			}
+//		}
+//		int count = 0;
+//		for (auto place : pn.PlacePointer)
+//		{
+//			for (auto color : place.second->colors)
+//			{
+//				//auto w = pn.goal_m[p.first];
+//				if (pn.m_target[place.first].size() ==0)
+//					continue;
+//				if (place.second->token[color] == pn.m_target[place.first].at(color))
+//					count++;
+//			}
+//			/*此处是设定目标标识结果*/
+//			if (count == 3)
+//				exit(1);
+//		}
+//		if (enable_t.size() == 0)
+//		{
+//			cout << "无使能变迁" << endl;
+//			exit(1);
+//		}
+//		enable_t.clear();
+//	}	
+//}
 
 string Petri::stratige()
 {
@@ -52,23 +78,36 @@ string Petri::stratige()
 	return this->optimalPath[step++];
 }
 
-void Petri::updata_waitingtime(string t,string color)
+void Petri::updata_waitingtime(string t)
 {
-	auto tran = TransitionPointer[t];
+	string tran_id;
+	string tran_color;
+	string tran_num;
+	analysis(t, " ", tran_id, tran_color, "t", tran_num);
+	auto tran = tran_temp[atoi(tran_num.c_str())-1];
 	int need_waitingtime = 0;
-	for (auto &place : tran->transition_pre)
+	for (auto &place : tran.second->transition_pre)
 	{
-		if (PlacePointer[place.first]->delay != 0)
+		string place_id;
+		string place_color;
+		string place_num;
+		analysis(place.first, " ", place_id, place_color, "p", place_num);
+		if (place_temp[atoi(place_num.c_str())-1].second->delay != 0)
 		{
-			PlacePointer[place.first]->timer->begin = 0;
-			PlacePointer[place.first]->timer->end = 0;
+			place_temp[atoi(place_num.c_str()) - 1].second->timer->begin = 0;
+			place_temp[atoi(place_num.c_str()) - 1].second->timer->end = 0;
 		}
 	}
-	for (auto&place : tran->transition_pos)
+	for (auto&place : tran.second->transition_pos)
 	{
-		if (PlacePointer[place.first]->delay != 0)
-			PlacePointer[place.first]->timer->begin = 0;
+		string place_id;
+		string place_color;
+		string place_num;
+		analysis(place.first, " ", place_id, place_color, "p", place_num);
+		if (place_temp[atoi(place_num.c_str()) - 1].second->delay != 0)
+			place_temp[atoi(place_num.c_str()) - 1].second->timer->begin = 0;
 	}
+	
 }
 
 void Petri::init()
@@ -76,16 +115,15 @@ void Petri::init()
 	/*取出所有库所的id 类型string*/
 	int num_features_pre_place = 7;
 	vector<string> place_id;
-	for (auto place : PlacePointer)
+	for (auto place : place_temp)
 	{
 		place_id.push_back(place.second->id);
 	}
-	
-	int num_places = PlacePointer.size();//库所的数量
+	int num_places = place_temp.size();//库所的数量
 	int m_goals = m_target.size();//目标标识的长度
 	int place_color = 0;
 	/*计算带颜色库所的数量*/
-	for (auto place : PlacePointer)
+	for (auto place : place_temp)
 	{
 		for (auto p_color : place.second->colors)
 			place_color++;
@@ -96,7 +134,14 @@ void Petri::init()
 	{
 		for (int j = 0;j < place_temp[i].second->colors.size();j++) 
 		{	
+			//map<string, int>temp;
 			target[count++] = place_temp[i].second->m_target[place_temp[i].second->colors[j]];
+
+			/*if (place_temp[i].second->m_target.size() == 0 ||
+				place_temp[i].second->m_target.find(place_temp[i].second->colors[j]) == place_temp[i].second->m_target.end())
+				continue;
+			temp.emplace(place_temp[i].second->colors[j],place_temp[i].second->m_target[place_temp[i].second->colors[j]]);
+			m_target.emplace(place_temp[i].second->id, temp);*/
 		}
 	}
 	count = 0;
@@ -169,7 +214,7 @@ void Petri::init()
 	count = 0;
 	//变迁的数量96*10
 	int tran_color = 0;
-	for (auto tran : TransitionPointer)
+	for (auto tran : tran_temp)
 	{
 		for (auto t_color : tran.second->colors)
 			tran_color++;
@@ -178,6 +223,7 @@ void Petri::init()
 
 	float max_delay = 130;
 	policy = new Policy(0, place_color, num_transitions, num_features_pre_place, delays, max_delay ,target, m_capacity, num_pre_arcs, num_pos_arcs,ModelPath);
+	//delete[] target;
 	waiting_time.resize(num_places, 0.0);
 	timers.resize(num_places, new Timers);
 }
@@ -200,7 +246,8 @@ void Petri::js_toPetri(Petri& pn) {
 		for (auto &place : places_obj.GetObject())
 		{
 			rapidjson::Value&place_obj = places_obj[place.name];
-			auto p = new Place();
+			auto p = make_shared<Place>();
+			//auto p = new Place();
 			p->id = place.name.GetString();
 			//auto p = new Place(pn, place.name.GetString());
 			/*寻找json文件中的token*/
@@ -296,10 +343,10 @@ void Petri::js_toPetri(Petri& pn) {
 			pn.m_target.emplace(make_pair(p->id, p->m_target));
 		}
 		/*由于在PlacePointer加一个DisableCompare<string>结构体用来取消map的自动排序，并且map的插入是头插，需要进行重新排序*/
-		for (int i = place_temp.size()-1;i >= 0;i--)
+		/*for (int i = place_temp.size()-1;i >= 0;i--)
 		{
 			pn.PlacePointer.emplace(place_temp[i].first, place_temp[i].second);
-		}
+		}*/
 	}
 	/*判断文件中的transitions是否存在。*/
 	if (document.HasMember("transitions") && document["transitions"].IsObject())
@@ -308,7 +355,8 @@ void Petri::js_toPetri(Petri& pn) {
 		for (auto&trans : trans_obj.GetObject())
 		{
 			rapidjson::Value&tran = trans_obj[trans.name];
-			auto t = new Transition();
+			auto t = make_shared<Transition>();
+			//auto t = new Transition();
 			//auto t = new Transition(pn, trans.name.GetString());
 			rapidjson::Value::ConstMemberIterator it_pre = tran.FindMember("pre_arcs");
 			if (it_pre != tran.MemberEnd())
@@ -369,10 +417,10 @@ void Petri::js_toPetri(Petri& pn) {
 		}
 		
 		/*由于在TransitionPointer加一个DisableCompare<string>结构体用来取消map的自动排序，并且map的插入是头插，需要进行重新排序*/
-		for (int i = tran_temp.size() - 1;i > -1;i--)
+		/*for (int i = tran_temp.size() - 1;i > -1;i--)
 		{
 			pn.TransitionPointer.emplace(tran_temp[i].first, tran_temp[i].second);
-		}
+		}*/
 	}
 	
 	/*判断文件中的t_colors是否存在。*/
@@ -429,7 +477,15 @@ bool Transition::is_enable(Petri & pn, string & color)
 		return false;
 	for (auto place : transition_pre)
 	{
-		if (pn.PlacePointer[place.first]->token[place.second[color]] <= 0)
+		string place_id;
+		string place_color;
+		string place_num;
+		analysis(place.first, " ", place_id, place_color, "p", place_num);
+		if (pn.place_temp[atoi(place_num.c_str()) - 1].second->token.size() == 0||
+			pn.place_temp[atoi(place_num.c_str()) - 1].second->token.find(place.second[color])== 
+			pn.place_temp[atoi(place_num.c_str()) - 1].second->token.end())
+			return false;
+		if (pn.place_temp[atoi(place_num.c_str())-1].second->token[place.second[color]] <= 0)
 			return false;
 	}
 	
@@ -442,13 +498,25 @@ void Transition::fire(Petri & pn, string color)
 	{
 		for (auto place : transition_pre)
 		{
-			pn.PlacePointer[place.first]->token[place.second[color]] -= 1;
-			if (pn.PlacePointer[place.first]->token[place.second[color]] < 0)
-				pn.PlacePointer[place.first]->token[place.second[color]] = 0;
+			string place_id;
+			string place_color;
+			string place_num;
+			analysis(place.first, " ", place_id, place_color, "p", place_num);
+			if (pn.place_temp[atoi(place_num.c_str()) - 1].second->token.size() == 0 ||
+				pn.place_temp[atoi(place_num.c_str()) - 1].second->token.find(place.second[color]) ==
+				pn.place_temp[atoi(place_num.c_str()) - 1].second->token.end())
+				continue;
+			pn.place_temp[atoi(place_num.c_str()) - 1].second->token[place.second[color]] -= 1;
+			if (pn.place_temp[atoi(place_num.c_str()) - 1].second->token[place.second[color]] < 0)
+				pn.place_temp[atoi(place_num.c_str()) - 1].second->token[place.second[color]] = 0;
 		}
 		for (auto place : transition_pos)
 		{
-			pn.PlacePointer[place.first]->token[place.second[color]] += 1;
+			string place_id;
+			string place_color;
+			string place_num;
+			analysis(place.first, " ", place_id, place_color, "p", place_num);
+			pn.place_temp[atoi(place_num.c_str()) - 1].second->token[place.second[color]] += 1;
 		}
 	}
 }

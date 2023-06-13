@@ -10,8 +10,8 @@
 //#include"readTxt.h"
 #include"petri.h"
 #include"read_class_pt.h"
+#include<memory>
 #include<map>
-
 
 using namespace hv;
 using namespace std;
@@ -19,32 +19,6 @@ using namespace std;
 /*当出现错误 C2872 “std”: 不明确的符号
   解决方案:项目-》属性-》c/c++-》语言-》符合模式 改成否
  */
- /*将字符串进行分解 例如:P22 agv 分解str2=P22,str3=agv,str5=22*/
-void analysis(string str, string str1, string &str2, string &str3, string str4, string &str5)//解析字符串
-{
-	string t = "t";
-	string p = "p";
-	int posLeft = 0;
-	int posX = str.find(str1);
-	int posRight = -1;
-	str2 = str.substr(posLeft, posX);
-	if (posX != -1)
-	{
-		str3 = str.substr(posX + 1, posRight);
-	}
-
-	if (str4 == "p")
-	{
-		posLeft = str.find(str4);
-		str5 = str.substr(posLeft + 1, posX - 1);
-	}
-	if (str4 == "t")
-	{
-		posLeft = str.find(str4);
-		str5 = str.substr(posLeft + 1, posX - 1);
-	}
-
-}
 
 int main() {
 	Petri  *pn = new Petri;
@@ -173,6 +147,9 @@ int main() {
 				string place_num;
 				string place_color;
 				analysis(place.second->id, " ", place_id, place_color, "p", place_num);
+				if (mws->petri->place_temp[atoi(place_num.c_str()) - 1].second->token.size() == 0|| 
+					mws->petri->place_temp[atoi(place_num.c_str()) - 1].second->token.find(color) == mws->petri->place_temp[atoi(place_num.c_str()) - 1].second->token.end())
+					continue;
 				if (mws->petri->place_temp[atoi(place_num.c_str()) - 1].second->token[color] != 0 
 					&& mws->petri->place_temp[atoi(place_num.c_str()) - 1].second->delay != 0)
 					mws->petri->place_temp[atoi(place_num.c_str()) - 1].second->timer->start();
@@ -194,6 +171,8 @@ int main() {
 			{
 				for (auto color : place.second->colors)
 				{
+					if (place.second->token.size() == 0)
+						continue;
 					if (place.second->timer != nullptr && place.second->token[color] != 0)
 						place.second->delay = place.second->timer->finish();
 				}
@@ -208,6 +187,9 @@ int main() {
 						num_enable_transitions++;
 				}
 			}
+			//shared_ptr<long long> ;
+			//shared_ptr<long long>enable_transitions(new long long(num_enable_transitions + 1));
+			//cout << *enable_transitions1 << endl;
 			long long* enable_transitions = new long long[num_enable_transitions + 1];
 			int count = 0;
 			for (auto tran : trans)
@@ -236,12 +218,13 @@ int main() {
 			{
 				for (auto color : place.second->colors)
 				{
+					if (place.second->token.size() == 0 || place.second->token.find(color)== place.second->token.end())
+						continue;
 					if (place.second->token[color] != 0)
 						num_nonempty_places++;
 				}
 			}
 			long long* nonempty_places = new long long[num_nonempty_places + 1];
-			//long long* real_nonempty_places = new long long[num_nonempty_places.size() + 1];
 			float* markings = new float[num_places + 1];
 			float* waiting_times = new float[num_nonempty_places + 1];
 			count = 0;
@@ -254,6 +237,11 @@ int main() {
 				for (int i = 0;i < place.second->colors.size();i++)
 				{
 					analysis(place.second->id, " ", place_id, place_color, "p", place_num);
+					if (place.second->token.size() == 0 )
+					{
+						mark++;
+						continue;
+					}	
 					if (place.second->token[place.second->colors[i]] != 0)
 					{
 						string str = place_id.append(" ").append(place.second->colors[i]);
@@ -267,13 +255,16 @@ int main() {
 							}
 						}
 						markings[mark] = place.second->token[pn->p_colors[i]];
+						cout << markings[mark] << " ";
+						cout << mark << endl;
 					}
 					else
 					{
 						markings[mark] = 0;
 					}
-					//cout << markings[mark] << " ";
+					
 					mark++;
+					
 				}
 			}
 			mark = 0;
@@ -289,13 +280,14 @@ int main() {
 				//cout << Places_id_string_translate_int[nonempty_places[i] - 1].second << endl;
 				analysis(Places_id_string_translate_int[nonempty_places[i] - 1].second, " ", place_id, place_color, "p", place_num);
 				//cout << place_id << endl;
-				waiting_times[i] = places[atoi(place_num.c_str())].second->waiting_time;
-				if (waiting_times[i] > places[atoi(place_num.c_str())].second->delay)
+				waiting_times[i] = places[atoi(place_num.c_str())-1].second->waiting_time;
+				if (waiting_times[i] > places[atoi(place_num.c_str())-1].second->delay)
 				{
 					waiting_times[i] = places[atoi(place_num.c_str())].second->delay;
 				}
-				//cout << waiting_times[i] << " ";
+				cout << waiting_times[i] << " ";
 			}
+			cout << endl;
 			/**********************************************************************************/
 			auto temp = pn->policy->get_Q(num_enable_transitions, enable_transitions, num_nonempty_places,
 				nonempty_places, Places_id_string_translate_int.size(), markings, waiting_times, C_stack, C_t_stack);
@@ -337,7 +329,7 @@ int main() {
 					while (places[atoi(place_num.c_str()) - 1].second->judge_alive(*(mws->petri), place.second[next_transition_color]));
 				}
 
-
+				//mws->petri->updata_waitingtime(next_transition_id);
 				for (auto place : trans[atoi(next_transition_num.c_str()) - 1].second->transition_pos)
 				{
 					string place_id;
@@ -358,22 +350,9 @@ int main() {
 			{
 				std::cout << next_transition_id << " " << next_transition_color << "不是使能变迁" << std::endl;
 			}
-			int w = 0;
-			int q = 0;
-			for (auto place : places)
-			{
-				for (auto place_color : place.second->colors)
-				{
-					q++;
-					if (place.second->token[place_color] == place.second->m_target[place_color])
-						w++;
-				}
-			}
-			if (w == places.size()*q)
-				exit(1);
+		
 			delete[] enable_transitions;
 			delete[] nonempty_places;
-			//delete[] real_nonempty_places;
 			delete[] markings;
 			delete[] waiting_times;
 		}

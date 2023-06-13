@@ -14,7 +14,9 @@ using namespace std;
 using namespace rapidjson;
 class Place;
 class Transition;
-
+//shared_ptr<Place> ;
+//auto cc = make_shared<Place>();
+void analysis(string str, string str1, string &str2, string &str3, string str4, string &str5);
 class Timers
 {
 public:
@@ -38,10 +40,10 @@ public:
 class Petri {
 public:
 	int step = 0;
-	vector<pair<string, Place*>>place_temp;//设置一个place的寄存器，用来处理读取json文件的库所类
-	map<string, Place*>PlacePointer;//库所类，
-	vector<pair<string, Transition*>>tran_temp;//设置一个transition的寄存器，用来处理读取json文件的库所类
-	map<string, Transition*>TransitionPointer;//变迁类
+	vector<pair<string, shared_ptr<Place>>>place_temp;//设置一个place的寄存器，用来处理读取json文件的库所类
+	//map<string, Place*>PlacePointer;//库所类，
+	vector<pair<string, shared_ptr<Transition>>>tran_temp;//设置一个transition的寄存器，用来处理读取json文件的库所类
+	//map<string, Transition*>TransitionPointer;//变迁类
 	vector<string>p_colors;//库所的颜色集
 	vector<string>t_colors;//变迁的颜色集
 	float* delays;
@@ -63,17 +65,20 @@ public:
 	void js_toPetri(Petri&pn);//JSON转化Petri网
 	void play(Petri&pn);//Petri网自动演化
 	string stratige();//执行给定变迁的激发序列
-	void updata_waitingtime(string t,string color);
+	void updata_waitingtime(string t);
 	void init();
 	~Petri()
 	{
+		delete[] m_capacity;
+		delete[] num_pre_arcs;
+		delete[] num_pos_arcs;
 		delete ads;
 		delete policy;
 		delete[] delays;
-		for (auto &place : PlacePointer)
-			delete place.second;
-		for (auto &tran : TransitionPointer)
-			delete tran.second;
+		//for (auto &place : place_temp)
+			//delete place.second;
+		//for (auto &tran : tran_temp)
+			//delete tran.second;
 	}
 };
 
@@ -90,18 +95,22 @@ public:
 	map<string, int>m_target;
 	map<string, multimap<string, string>>place_pre;//库所的前置变迁
 	map<string, multimap<string, string>>place_pos;//库所的后置变迁
-	Place() { ; }
-	Place(Petri&pn, string n) :id(n) { 
+	Place() { timer = new Timers; }
+	//Place(Petri&pn, string n) :id(n) { 
 
-		//pn.PlacePointer.emplace(n, this);
-		pn.PlacePointer.insert(make_pair(n, this));
-		//pn.PlacePointer.insert_or_assign(make_pair(n,this));
-		//pn.placePointer.push_back(make_pair(n, this));
-		timer = new Timers; 
-	}
-	Place(Petri&pn, string n, map<string, int>token) :id(n), token(token) { timer = new Timers; }
+	//	//pn.PlacePointer.emplace(n, this);
+	//	pn.PlacePointer.insert(make_pair(n, this));
+	//	//pn.PlacePointer.insert_or_assign(make_pair(n,this));
+	//	//pn.placePointer.push_back(make_pair(n, this));
+	//	timer = new Timers; 
+	//}
+	//Place(Petri&pn, string n, map<string, int>token) :id(n), token(token) { timer = new Timers; }
 	virtual void low_exc(Petri&pn,string c);//写入执行库所的函数
 	virtual bool judge_alive(Petri&pn, string c);//读取当前库所是否执行完成
+	~Place()
+	{
+		delete timer;
+	}
 };
 class Transition
 {
@@ -111,10 +120,14 @@ public:
 	map<string, map<string, string>>transition_pre;//当前变迁的前置库所
 	map<string, map<string, string>>transition_pos;//当前变迁的后置库所
 	Transition() { ; }
-	Transition(Petri&pn) { pn.TransitionPointer.emplace(this->id, this); }
-	Transition(Petri&pn, string n) :id(n) { pn.TransitionPointer.emplace(n, this); };
+	/*Transition(Petri&pn) { pn.TransitionPointer.emplace(this->id, this); }
+	Transition(Petri&pn, string n) :id(n) { pn.TransitionPointer.emplace(n, this); };*/
 	virtual bool is_enable(Petri &pn, string &c);//找出使能变迁函数
 	virtual void fire(Petri &pn, string c);//执行变迁激发
+	~Transition()
+	{
+		;
+	}
 };
 
 
