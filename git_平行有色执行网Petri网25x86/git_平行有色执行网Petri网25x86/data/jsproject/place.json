@@ -1,0 +1,19 @@
+{
+	"t_colors":["y","r","b"],
+	"p_colors":["y","r","b"],
+	"place":
+	{
+		"p0":{"token":{"y":1,"r":1,"b":0},"preVertx":{},"postVertx":{"t0":{"y":"y","r":"r","b":"b"}}},
+		"p1":{"token":{"y":0,"r":0,"b":0},"preVertx":{"t0":{"y":"y","r":"r","b":"b"}},"postVertx":{"t1":{"y":"y","r":"r","b":"b"}}},
+		"p2":{"token":{"y":0,"r":0,"b":0},"preVertx":{"t1":{"y":"y","r":"r","b":"b"}},"postVertx":{}}
+
+	},
+	"transition":
+	{
+		"t0":{"preVertx":{"p0":{"y":"y","r":"r","b":"b"}},"postVertx":{"p1":{"y":"y","r":"r","b":"b"}}},
+		"t1":{"preVertx":{"p1":{"y":"y","r":"r","b":"b"}},"postVertx":{"p2":{"y":"y","r":"r","b":"b"}}}
+	}
+
+}
+
+

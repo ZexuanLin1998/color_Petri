@@ -1,0 +1,5 @@
+{place:
+	{id:{"p0"},"token":{("y":1),("r":1)},"preVertx":{(" ":{" ": })},"postVertx":{("t0":{"id":1})}}
+	{"id":{"p1"},"token":{(" ": ),(" ": )},"preVertx":{("t0":{"id":1})},"postVertx":{("t1":{"id":1})}}
+	{"id":{"p2"},"token":{(" ": ),(" ": )},"preVertx":{("t1":{"id":1})},"postVertx":{(" ":{" ": })}}
+}

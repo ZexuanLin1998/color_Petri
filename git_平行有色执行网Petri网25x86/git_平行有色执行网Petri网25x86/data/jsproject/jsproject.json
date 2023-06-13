@@ -1,0 +1,11 @@
+{"place":
+{
+    "b~": {"token_num": 1, "pre_arcs": {}, "post_arcs": { "t_|b": 1, "t_|b_": 1}},
+    "id":"p0r" {"token_num":1,"pre":{},"post_arcs":{"t0r":1}},
+
+},
+"transition":
+{
+
+}
+}
