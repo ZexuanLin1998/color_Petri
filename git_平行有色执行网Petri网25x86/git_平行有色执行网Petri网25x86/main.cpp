@@ -19,32 +19,7 @@ using namespace std;
 /*当出现错误 C2872 “std”: 不明确的符号
   解决方案:项目-》属性-》c/c++-》语言-》符合模式 改成否
  */
- /*将字符串进行分解 例如:P22 agv 分解str2=P22,str3=agv,str5=22*/
-void analysis(string str, string str1, string &str2, string &str3, string str4, string &str5)//解析字符串
-{
-	string t = "t";
-	string p = "p";
-	int posLeft = 0;
-	int posX = str.find(str1);
-	int posRight = -1;
-	str2 = str.substr(posLeft, posX);
-	if (posX != -1)
-	{
-		str3 = str.substr(posX + 1, posRight);
-	}
 
-	if (str4 == "p")
-	{
-		posLeft = str.find(str4);
-		str5 = str.substr(posLeft + 1, posX - 1);
-	}
-	if (str4 == "t")
-	{
-		posLeft = str.find(str4);
-		str5 = str.substr(posLeft + 1, posX - 1);
-	}
-
-}
 
 int main() {
 	Petri  *pn = new Petri;

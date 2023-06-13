@@ -14,6 +14,7 @@ using namespace std;
 using namespace rapidjson;
 class Place;
 class Transition;
+void analysis(string str, string str1, string &str2, string &str3, string str4, string &str5);
 class Timers
 {
 public:
@@ -37,8 +38,10 @@ public:
 class Petri {
 public:
 	int step = 0;
-	map<string, Place*>PlacePointer;//库所类
-	map<string, Transition*>TransitionPointer;//变迁类
+	vector<pair<string, Place*>>PlacePointer;//库所类
+	//map<string, Place*>PlacePointer;//库所类
+	vector<pair<string, Transition*>>TransitionPointer;
+	//map<string, Transition*>TransitionPointer;//变迁类
 	vector<string>p_colors;//库所的颜色集
 	vector<string>t_colors;//变迁的颜色集
 	float* delays;
@@ -61,6 +64,9 @@ public:
 	void init();
 	~Petri()
 	{
+		delete[] m_capacity;
+		delete[] num_pre_arcs;
+		delete[] num_pos_arcs;
 		delete ads;
 		delete policy;
 		delete[] delays;
@@ -84,10 +90,15 @@ public:
 	map<string, int>m_target;
 	map<string, multimap<string, string>>place_pre;//库所的前置变迁
 	map<string, multimap<string, string>>place_pos;//库所的后置变迁
-	Place(Petri&pn, string n) :id(n) { pn.PlacePointer.emplace(n, this);timer = new Timers; }
-	Place(Petri&pn, string n, map<string, int>token) :id(n), token(token) { timer = new Timers; }
+	Place() { timer = new Timers; }
+	//Place(Petri&pn, string n) :id(n) { pn.PlacePointer.emplace(n, this);timer = new Timers; }
+	//Place(Petri&pn, string n, map<string, int>token) :id(n), token(token) { timer = new Timers; }
 	virtual void low_exc(Petri&pn,string c);//写入执行库所的函数
 	virtual bool judge_alive(Petri&pn, string c);//读取当前库所是否执行完成
+	~Place()
+	{
+		delete timer;
+	}
 };
 class Transition
 {
@@ -96,10 +107,15 @@ public:
 	vector<string> colors;//当前变迁拥有的颜色
 	map<string, map<string, string>>transition_pre;//当前变迁的前置库所
 	map<string, map<string, string>>transition_pos;//当前变迁的后置库所
-	Transition(Petri&pn) { pn.TransitionPointer.emplace(this->id, this); }
-	Transition(Petri&pn, string n) :id(n) { pn.TransitionPointer.emplace(n, this); };
+	Transition() { ; }
+	//Transition(Petri&pn) { pn.TransitionPointer.emplace(this->id, this); }
+	//Transition(Petri&pn, string n) :id(n) { pn.TransitionPointer.emplace(n, this); };
 	virtual bool is_enable(Petri &pn, string &c);//找出使能变迁函数
 	virtual void fire(Petri &pn, string c);//执行变迁激发
+	~Transition()
+	{
+		;
+	}
 };
 
 
