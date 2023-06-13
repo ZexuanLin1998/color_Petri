@@ -20,8 +20,10 @@ using namespace std;
   解决方案:项目-》属性-》c/c++-》语言-》符合模式 改成否
  */
 
+
 int main() {
 	Petri  *pn = new Petri;
+	//auto pn = make_shared<Petri>();
 	//map<int, string, Disablecompare<int>>Places_id_string_translate_int;
 	//map<int, string, Disablecompare<int>>Trans_id_string_translate_int;
 	//map<string, int, Disablecompare<string>>Places_id_int_translate_string;
@@ -171,7 +173,7 @@ int main() {
 			{
 				for (auto color : place.second->colors)
 				{
-					if (place.second->token.size() == 0)
+					if (place.second->token.size() == 0|| place.second->token.find(color)== place.second->token.end())
 						continue;
 					if (place.second->timer != nullptr && place.second->token[color] != 0)
 						place.second->delay = place.second->timer->finish();
@@ -187,9 +189,6 @@ int main() {
 						num_enable_transitions++;
 				}
 			}
-			//shared_ptr<long long> ;
-			//shared_ptr<long long>enable_transitions(new long long(num_enable_transitions + 1));
-			//cout << *enable_transitions1 << endl;
 			long long* enable_transitions = new long long[num_enable_transitions + 1];
 			int count = 0;
 			for (auto tran : trans)
@@ -212,7 +211,6 @@ int main() {
 			}
 			count = 0;
 			/*******************************************/
-			//vector<string>num_nonempty_places;
 			int num_nonempty_places = 0;
 			for (auto place : places)
 			{
@@ -237,8 +235,9 @@ int main() {
 				for (int i = 0;i < place.second->colors.size();i++)
 				{
 					analysis(place.second->id, " ", place_id, place_color, "p", place_num);
-					if (place.second->token.size() == 0 )
+					if (place.second->token.size() == 0 || place.second->token.find(place.second->colors[i]) == place.second->token.end())
 					{
+						markings[mark] = 0;
 						mark++;
 						continue;
 					}	
@@ -255,14 +254,13 @@ int main() {
 							}
 						}
 						markings[mark] = place.second->token[pn->p_colors[i]];
-						cout << markings[mark] << " ";
-						cout << mark << endl;
+						//cout << mark << endl;
 					}
 					else
 					{
 						markings[mark] = 0;
 					}
-					
+					//cout << markings[mark] << " ";
 					mark++;
 					
 				}
@@ -272,20 +270,16 @@ int main() {
 			/****************************************************************************************/
 			for (int i = 0;i != num_nonempty_places;i++)
 			{
-				//cout << Places_id_string_translate_int[real_nonempty_places[i]] << endl;
 				string place_id;
 				string place_color;
 				string place_num;
-				//cout << nonempty_places[i] << endl;
-				//cout << Places_id_string_translate_int[nonempty_places[i] - 1].second << endl;
 				analysis(Places_id_string_translate_int[nonempty_places[i] - 1].second, " ", place_id, place_color, "p", place_num);
-				//cout << place_id << endl;
 				waiting_times[i] = places[atoi(place_num.c_str())-1].second->waiting_time;
 				if (waiting_times[i] > places[atoi(place_num.c_str())-1].second->delay)
 				{
 					waiting_times[i] = places[atoi(place_num.c_str())].second->delay;
 				}
-				cout << waiting_times[i] << " ";
+				//cout << waiting_times[i] << " ";
 			}
 			cout << endl;
 			/**********************************************************************************/
@@ -329,7 +323,7 @@ int main() {
 					while (places[atoi(place_num.c_str()) - 1].second->judge_alive(*(mws->petri), place.second[next_transition_color]));
 				}
 
-				//mws->petri->updata_waitingtime(next_transition_id);
+				mws->petri->updata_waitingtime(next_transition_id);
 				for (auto place : trans[atoi(next_transition_num.c_str()) - 1].second->transition_pos)
 				{
 					string place_id;
@@ -351,6 +345,17 @@ int main() {
 				std::cout << next_transition_id << " " << next_transition_color << "不是使能变迁" << std::endl;
 			}
 		
+			for (auto target : mws->petri->m_target)
+			{
+				string place_id;
+				string place_color;
+				string place_num;
+				analysis(target.first, " ", place_id, place_color, "p", place_num);
+				if (target.second.size() == 0)
+					continue;
+				if (places[atoi(place_num.c_str()) - 1].second->token == target.second)
+					exit(1);
+			}
 			delete[] enable_transitions;
 			delete[] nonempty_places;
 			delete[] markings;

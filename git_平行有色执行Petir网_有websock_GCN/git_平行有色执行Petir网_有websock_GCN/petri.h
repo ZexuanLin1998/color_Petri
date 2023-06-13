@@ -40,9 +40,9 @@ public:
 class Petri {
 public:
 	int step = 0;
-	vector<pair<string, shared_ptr<Place>>>place_temp;//设置一个place的寄存器，用来处理读取json文件的库所类
+	vector<pair<string, Place*>>place_temp;//设置一个place的寄存器，用来处理读取json文件的库所类
 	//map<string, Place*>PlacePointer;//库所类，
-	vector<pair<string, shared_ptr<Transition>>>tran_temp;//设置一个transition的寄存器，用来处理读取json文件的库所类
+	vector<pair<string, Transition*>>tran_temp;//设置一个transition的寄存器，用来处理读取json文件的库所类
 	//map<string, Transition*>TransitionPointer;//变迁类
 	vector<string>p_colors;//库所的颜色集
 	vector<string>t_colors;//变迁的颜色集
@@ -75,10 +75,10 @@ public:
 		delete ads;
 		delete policy;
 		delete[] delays;
-		//for (auto &place : place_temp)
-			//delete place.second;
-		//for (auto &tran : tran_temp)
-			//delete tran.second;
+		for (auto &place : place_temp)
+			delete place.second;
+		for (auto &tran : tran_temp)
+			delete tran.second;
 	}
 };
 

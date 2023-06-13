@@ -21,7 +21,7 @@ inline string read_json(const char* path) {
 		exit(1);
 	}
 	string str((istreambuf_iterator<char>(file_json)), istreambuf_iterator<char>());//将文件的数据流转换位std::string类型
-	cout << str << endl;
+	//cout << str << endl;
 	file_json.close();
 	return str;
 }

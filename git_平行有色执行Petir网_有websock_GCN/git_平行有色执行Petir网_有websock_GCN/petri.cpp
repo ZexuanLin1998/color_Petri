@@ -84,9 +84,9 @@ void Petri::updata_waitingtime(string t)
 	string tran_color;
 	string tran_num;
 	analysis(t, " ", tran_id, tran_color, "t", tran_num);
-	auto tran = tran_temp[atoi(tran_num.c_str())-1];
+	//auto tran = tran_temp[atoi(tran_num.c_str())-1];
 	int need_waitingtime = 0;
-	for (auto &place : tran.second->transition_pre)
+	for (auto &place : tran_temp[atoi(tran_num.c_str()) - 1].second->transition_pre)
 	{
 		string place_id;
 		string place_color;
@@ -98,7 +98,7 @@ void Petri::updata_waitingtime(string t)
 			place_temp[atoi(place_num.c_str()) - 1].second->timer->end = 0;
 		}
 	}
-	for (auto&place : tran.second->transition_pos)
+	for (auto&place : tran_temp[atoi(tran_num.c_str()) - 1].second->transition_pos)
 	{
 		string place_id;
 		string place_color;
@@ -246,8 +246,7 @@ void Petri::js_toPetri(Petri& pn) {
 		for (auto &place : places_obj.GetObject())
 		{
 			rapidjson::Value&place_obj = places_obj[place.name];
-			auto p = make_shared<Place>();
-			//auto p = new Place();
+			auto p = new Place();
 			p->id = place.name.GetString();
 			//auto p = new Place(pn, place.name.GetString());
 			/*寻找json文件中的token*/
@@ -355,8 +354,7 @@ void Petri::js_toPetri(Petri& pn) {
 		for (auto&trans : trans_obj.GetObject())
 		{
 			rapidjson::Value&tran = trans_obj[trans.name];
-			auto t = make_shared<Transition>();
-			//auto t = new Transition();
+			auto t = new Transition();
 			//auto t = new Transition(pn, trans.name.GetString());
 			rapidjson::Value::ConstMemberIterator it_pre = tran.FindMember("pre_arcs");
 			if (it_pre != tran.MemberEnd())
@@ -502,10 +500,10 @@ void Transition::fire(Petri & pn, string color)
 			string place_color;
 			string place_num;
 			analysis(place.first, " ", place_id, place_color, "p", place_num);
-			if (pn.place_temp[atoi(place_num.c_str()) - 1].second->token.size() == 0 ||
+			/*if (pn.place_temp[atoi(place_num.c_str()) - 1].second->token.size() == 0 ||
 				pn.place_temp[atoi(place_num.c_str()) - 1].second->token.find(place.second[color]) ==
 				pn.place_temp[atoi(place_num.c_str()) - 1].second->token.end())
-				continue;
+				continue;*/
 			pn.place_temp[atoi(place_num.c_str()) - 1].second->token[place.second[color]] -= 1;
 			if (pn.place_temp[atoi(place_num.c_str()) - 1].second->token[place.second[color]] < 0)
 				pn.place_temp[atoi(place_num.c_str()) - 1].second->token[place.second[color]] = 0;
